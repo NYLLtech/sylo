@@ -1,3 +1,4 @@
+mod classifier;
 mod init;
 mod manifest;
 mod scan;

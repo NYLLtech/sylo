@@ -39,6 +39,6 @@ pub fn write_manifest(manifest_path: &PathBuf, manifest: Manifest) {
     }
 }
 
-pub fn to_identifier(file: &PathBuf) -> String {
+pub fn normalize_path(file: &PathBuf) -> String {
     file.to_string_lossy().to_string().replace('\\', "/")
 }

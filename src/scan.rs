@@ -10,8 +10,9 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{
     DIRECTORY_NAME, IGNORE_FILE_NAME, MANIFEST_FILE_NAME,
+    classifier::Matcher,
     manifest::Manifest,
-    utils::{load_manifest, to_identifier, write_manifest},
+    utils::{load_manifest, normalize_path, write_manifest},
 };
 
 #[derive(Debug)]
@@ -107,6 +108,7 @@ pub fn scan(path: PathBuf) {
     let manifest_path: PathBuf = sylo_directory.join(MANIFEST_FILE_NAME);
 
     let mut manifest: Manifest = load_manifest(&manifest_path);
+    let matcher: Matcher = Matcher::new(&manifest);
 
     let scan_result: ScanResult = match do_scan(&path, &manifest) {
         Ok(scan_result) => scan_result,
@@ -144,11 +146,13 @@ pub fn scan(path: PathBuf) {
     println!("Updating manifest...");
 
     for new_file in scan_result.new_files {
-        manifest.files.insert(to_identifier(&new_file), vec![]);
+        manifest
+            .files
+            .insert(normalize_path(&new_file), matcher.get_tags(new_file));
     }
 
     for missing_file in scan_result.missing_files {
-        manifest.files.remove(&to_identifier(&missing_file));
+        manifest.files.remove(&normalize_path(&missing_file));
     }
 
     write_manifest(&manifest_path, manifest);

@@ -16,6 +16,7 @@ Source = "Source"
 "Cargo.toml" = []
 LICENSE-APACHE = []
 LICENSE-MIT = []
+"src/classifier.rs" = ["Source", "Rust"]
 "src/init.rs" = []
 "src/main.rs" = []
 "src/manifest.rs" = []
