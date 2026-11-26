@@ -1,11 +1,18 @@
 mod init;
 mod manifest;
+mod scan;
+mod utils;
 
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
 use crate::init::init;
+use crate::scan::scan;
+
+const IGNORE_FILE_NAME: &'static str = ".syloignore";
+const DIRECTORY_NAME: &'static str = ".sylo";
+const MANIFEST_FILE_NAME: &'static str = "manifest.toml";
 
 fn parse_key_value(string: &str) -> Result<(String, String), String> {
     let Some((key, value)) = string.split_once('=') else {
@@ -68,7 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             patterns,
             classifiers,
         } => init(path, ignore, patterns, classifiers),
-        Commands::Scan => todo!(),
+        Commands::Scan => scan(path),
         Commands::Server => todo!(),
     }
 

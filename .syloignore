@@ -1,1 +1,5 @@
-/target
+# Version control
+.git/*
+
+# Rust specific
+target/*

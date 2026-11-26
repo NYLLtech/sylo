@@ -5,11 +5,9 @@ use std::{
     path::PathBuf,
 };
 
-use crate::manifest::Manifest;
-
-const IGNORE_FILE_NAME: &'static str = ".syloignore";
-const SYLO_DIRECTORY_NAME: &'static str = ".sylo";
-const MANIFEST_FILE_NAME: &'static str = "manifest.toml";
+use crate::{
+    DIRECTORY_NAME, IGNORE_FILE_NAME, MANIFEST_FILE_NAME, manifest::Manifest, utils::write_manifest,
+};
 
 pub fn create_ignore_file(path: &PathBuf) {
     let ignore_file: PathBuf = path.join(IGNORE_FILE_NAME);
@@ -70,32 +68,16 @@ pub fn initialize_manifest(
 ) {
     let manifest_path: PathBuf = sylo_path.join(MANIFEST_FILE_NAME);
 
-    let mut file: File = match File::create_new(&manifest_path) {
-        Ok(file) => file,
-        Err(error) => {
-            eprintln!(
-                "Could not create manifest ({MANIFEST_FILE_NAME}): {}",
-                error
-            );
+    if let Err(error) = File::create_new(&manifest_path) {
+        eprintln!("Could not create manifest ({MANIFEST_FILE_NAME}): {error}",);
 
-            return;
-        }
+        return;
     };
 
     let (tags, patterns, classifiers) = parse_options(patterns, classifiers);
+    let manifest: Manifest = Manifest::latest(tags, patterns, classifiers);
 
-    let content = match toml::to_string(&Manifest::latest(tags, patterns, classifiers)) {
-        Ok(content) => content,
-        Err(error) => {
-            eprintln!("Could not serialize manifest ({MANIFEST_FILE_NAME}): {error}",);
-
-            return;
-        }
-    };
-
-    if let Err(error) = file.write_all(content.as_bytes()) {
-        eprintln!("Could not write manifest ({MANIFEST_FILE_NAME}): {error}",);
-    }
+    write_manifest(&manifest_path, manifest);
 }
 
 pub fn init(
@@ -110,12 +92,12 @@ pub fn init(
         create_ignore_file(&path);
     }
 
-    let sylo_path: PathBuf = path.join(SYLO_DIRECTORY_NAME);
+    let sylo_path: PathBuf = path.join(DIRECTORY_NAME);
     let result: Result<(), io::Error> = fs::create_dir(&sylo_path);
 
     if result.is_err() {
         eprintln!(
-            "Could not create Sylo directory ({SYLO_DIRECTORY_NAME}): {}",
+            "Could not create Sylo directory ({DIRECTORY_NAME}): {}",
             result.unwrap_err(),
         );
     }
