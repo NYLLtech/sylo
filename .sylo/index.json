@@ -1,0 +1,39 @@
+{
+  "version": 0,
+  "files": {
+    ".gitignore": [],
+    ".syloignore": [],
+    "Cargo.lock": [],
+    "Cargo.toml": [],
+    "LICENSE-APACHE": [],
+    "LICENSE-MIT": [],
+    "src/classifier.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/index.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/init.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/main.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/manifest.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/scan.rs": [
+      "Source",
+      "Rust"
+    ],
+    "src/utils.rs": [
+      "Source",
+      "Rust"
+    ]
+  }
+}

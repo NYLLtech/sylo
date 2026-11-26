@@ -15,9 +15,6 @@ pub struct Manifest {
 
     #[serde(default)]
     pub classifiers: BTreeMap<String, Vec<String>>,
-
-    #[serde(default)]
-    pub files: BTreeMap<String, Vec<String>>,
 }
 
 impl Manifest {
@@ -35,7 +32,6 @@ impl Manifest {
             tags,
             patterns,
             classifiers,
-            files: BTreeMap::new(),
         }
     }
 }

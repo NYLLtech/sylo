@@ -9,10 +9,11 @@ use globset::{Glob, GlobSet, GlobSetBuilder};
 use walkdir::{DirEntry, WalkDir};
 
 use crate::{
-    DIRECTORY_NAME, IGNORE_FILE_NAME, MANIFEST_FILE_NAME,
+    DIRECTORY_NAME, IGNORE_FILE_NAME, INDEX_FILE_NAME, MANIFEST_FILE_NAME,
     classifier::Matcher,
+    index::Index,
     manifest::Manifest,
-    utils::{load_manifest, normalize_path, write_manifest},
+    utils::{load_index, load_manifest, normalize_path, write_index, write_manifest},
 };
 
 #[derive(Debug)]
@@ -49,7 +50,7 @@ fn load_ignore_patterns(path: &Path) -> io::Result<GlobSet> {
     builder.build().map_err(io::Error::other)
 }
 
-fn do_scan(path: &PathBuf, manifest: &Manifest) -> io::Result<ScanResult> {
+fn do_scan(path: &PathBuf, index: &Index) -> io::Result<ScanResult> {
     let ignore: GlobSet = load_ignore_patterns(&path)?;
 
     let mut discovered: HashSet<String> = HashSet::new();
@@ -73,12 +74,12 @@ fn do_scan(path: &PathBuf, manifest: &Manifest) -> io::Result<ScanResult> {
 
         discovered.insert(relative_entry_path_string.clone());
 
-        if !manifest.files.contains_key(&relative_entry_path_string) {
+        if !index.files.contains_key(&relative_entry_path_string) {
             new_files.push(relative_entry_path.to_path_buf());
         }
     }
 
-    let missing_files: Vec<PathBuf> = manifest
+    let missing_files: Vec<PathBuf> = index
         .files
         .keys()
         .filter(|path| !discovered.contains(*path))
@@ -106,11 +107,14 @@ fn display_files(items: &[PathBuf]) -> String {
 pub fn scan(path: PathBuf) {
     let sylo_directory: PathBuf = path.join(DIRECTORY_NAME);
     let manifest_path: PathBuf = sylo_directory.join(MANIFEST_FILE_NAME);
+    let index_path: PathBuf = sylo_directory.join(INDEX_FILE_NAME);
 
-    let mut manifest: Manifest = load_manifest(&manifest_path);
+    let manifest: Manifest = load_manifest(&manifest_path);
+    let mut index: Index = load_index(&index_path);
+
     let matcher: Matcher = Matcher::new(&manifest);
 
-    let scan_result: ScanResult = match do_scan(&path, &manifest) {
+    let scan_result: ScanResult = match do_scan(&path, &index) {
         Ok(scan_result) => scan_result,
         Err(error) => {
             eprintln!("Could not scan the workspace: {}", error);
@@ -135,7 +139,7 @@ pub fn scan(path: PathBuf) {
 
     let mut input: String = String::new();
 
-    print!("Update manifest? (Y/n): ");
+    print!("Update index? (Y/n): ");
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut input).unwrap();
 
@@ -143,17 +147,17 @@ pub fn scan(path: PathBuf) {
         return;
     };
 
-    println!("Updating manifest...");
+    println!("Updating index...");
 
     for new_file in scan_result.new_files {
-        manifest
+        index
             .files
             .insert(normalize_path(&new_file), matcher.get_tags(new_file));
     }
 
     for missing_file in scan_result.missing_files {
-        manifest.files.remove(&normalize_path(&missing_file));
+        index.files.remove(&normalize_path(&missing_file));
     }
 
-    write_manifest(&manifest_path, manifest);
+    write_index(&index_path, index);
 }

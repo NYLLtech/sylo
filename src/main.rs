@@ -1,4 +1,5 @@
 mod classifier;
+mod index;
 mod init;
 mod manifest;
 mod scan;
@@ -14,6 +15,7 @@ use crate::scan::scan;
 const IGNORE_FILE_NAME: &'static str = ".syloignore";
 const DIRECTORY_NAME: &'static str = ".sylo";
 const MANIFEST_FILE_NAME: &'static str = "manifest.toml";
+const INDEX_FILE_NAME: &'static str = "index.json";
 
 fn parse_key_value(string: &str) -> Result<(String, String), String> {
     let Some((key, value)) = string.split_once('=') else {
