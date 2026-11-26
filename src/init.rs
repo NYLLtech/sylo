@@ -1,7 +1,7 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fs::{self, File},
-    io::{self, Write},
+    io,
     path::PathBuf,
 };
 
@@ -22,10 +22,10 @@ pub fn create_ignore_file(path: &PathBuf) {
 }
 
 pub fn convert_rules(
-    tags: &mut HashMap<String, String>,
+    tags: &mut BTreeMap<String, String>,
     rules: Vec<(String, String)>,
-) -> HashMap<String, Vec<String>> {
-    let mut converted: HashMap<String, Vec<String>> = HashMap::new();
+) -> BTreeMap<String, Vec<String>> {
+    let mut converted: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     for (rule, rule_tags) in rules {
         let rule_tags: Vec<String> = rule_tags
@@ -50,13 +50,14 @@ pub fn parse_options(
     patterns: Vec<(String, String)>,
     classifiers: Vec<(String, String)>,
 ) -> (
-    HashMap<String, String>,
-    HashMap<String, Vec<String>>,
-    HashMap<String, Vec<String>>,
+    BTreeMap<String, String>,
+    BTreeMap<String, Vec<String>>,
+    BTreeMap<String, Vec<String>>,
 ) {
-    let mut tags: HashMap<String, String> = HashMap::new();
-    let converted_patterns: HashMap<String, Vec<String>> = convert_rules(&mut tags, patterns);
-    let converted_classifiers: HashMap<String, Vec<String>> = convert_rules(&mut tags, classifiers);
+    let mut tags: BTreeMap<String, String> = BTreeMap::new();
+    let converted_patterns: BTreeMap<String, Vec<String>> = convert_rules(&mut tags, patterns);
+    let converted_classifiers: BTreeMap<String, Vec<String>> =
+        convert_rules(&mut tags, classifiers);
 
     (tags, converted_patterns, converted_classifiers)
 }

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 const MANIFEST_VERSION: u32 = 0;
 
@@ -8,34 +8,34 @@ pub struct Manifest {
     pub version: u32,
 
     #[serde(default)]
-    pub tags: HashMap<String, String>,
+    pub tags: BTreeMap<String, String>,
 
     #[serde(default)]
-    pub patterns: HashMap<String, Vec<String>>,
+    pub patterns: BTreeMap<String, Vec<String>>,
 
     #[serde(default)]
-    pub classifiers: HashMap<String, Vec<String>>,
+    pub classifiers: BTreeMap<String, Vec<String>>,
 
     #[serde(default)]
-    pub files: HashMap<String, Vec<String>>,
+    pub files: BTreeMap<String, Vec<String>>,
 }
 
 impl Manifest {
     pub fn new() -> Self {
-        Self::latest(HashMap::new(), HashMap::new(), HashMap::new())
+        Self::latest(BTreeMap::new(), BTreeMap::new(), BTreeMap::new())
     }
 
     pub fn latest(
-        tags: HashMap<String, String>,
-        patterns: HashMap<String, Vec<String>>,
-        classifiers: HashMap<String, Vec<String>>,
+        tags: BTreeMap<String, String>,
+        patterns: BTreeMap<String, Vec<String>>,
+        classifiers: BTreeMap<String, Vec<String>>,
     ) -> Self {
         Manifest {
             version: MANIFEST_VERSION,
             tags,
             patterns,
             classifiers,
-            files: HashMap::new(),
+            files: BTreeMap::new(),
         }
     }
 }

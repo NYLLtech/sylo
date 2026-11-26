@@ -1,8 +1,8 @@
 version = 0
 
 [tags]
-Source = "Source"
 Rust = "Rust"
+Source = "Source"
 
 [patterns]
 
@@ -10,14 +10,14 @@ Rust = "Rust"
 "*.rs" = ["Source", "Rust"]
 
 [files]
-"src/scan.rs" = []
-"src/utils.rs" = []
 ".gitignore" = []
 ".syloignore" = []
-"src/manifest.rs" = []
-LICENSE-APACHE = []
-"src/init.rs" = []
-LICENSE-MIT = []
-"Cargo.toml" = []
 "Cargo.lock" = []
+"Cargo.toml" = []
+LICENSE-APACHE = []
+LICENSE-MIT = []
+"src/init.rs" = []
 "src/main.rs" = []
+"src/manifest.rs" = []
+"src/scan.rs" = []
+"src/utils.rs" = []
