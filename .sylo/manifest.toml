@@ -1,0 +1,12 @@
+version = 0
+
+[tags]
+Source = "Source"
+Rust = "Rust"
+
+[patterns]
+
+[classifiers]
+"*.rs" = ["Source", "Rust"]
+
+[files]
