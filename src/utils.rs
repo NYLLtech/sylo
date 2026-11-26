@@ -1,11 +1,6 @@
-use std::{
-    collections::HashMap,
-    fs,
-    io::{self, Write},
-    path::PathBuf,
-};
+use std::{fs, io::Write, path::PathBuf};
 
-use crate::{DIRECTORY_NAME, MANIFEST_FILE_NAME, manifest::Manifest};
+use crate::{MANIFEST_FILE_NAME, manifest::Manifest};
 
 pub fn load_manifest(manifest_path: &PathBuf) -> Manifest {
     if !manifest_path.exists() {
@@ -42,4 +37,8 @@ pub fn write_manifest(manifest_path: &PathBuf, manifest: Manifest) {
     if let Err(error) = file.write_all(content.as_bytes()) {
         eprintln!("Could not write manifest ({MANIFEST_FILE_NAME}): {error}",);
     }
+}
+
+pub fn to_identifier(file: &PathBuf) -> String {
+    file.to_string_lossy().to_string().replace('\\', "/")
 }

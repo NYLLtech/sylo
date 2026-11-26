@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fs,
     io::{self, Write},
     path::{Path, PathBuf},
@@ -11,7 +11,7 @@ use walkdir::{DirEntry, WalkDir};
 use crate::{
     DIRECTORY_NAME, IGNORE_FILE_NAME, MANIFEST_FILE_NAME,
     manifest::Manifest,
-    utils::{load_manifest, write_manifest},
+    utils::{load_manifest, to_identifier, write_manifest},
 };
 
 #[derive(Debug)]
@@ -49,7 +49,6 @@ fn load_ignore_patterns(path: &Path) -> io::Result<GlobSet> {
 }
 
 fn do_scan(path: &PathBuf, manifest: &Manifest) -> io::Result<ScanResult> {
-    let sylo_directory: PathBuf = path.join(DIRECTORY_NAME);
     let ignore: GlobSet = load_ignore_patterns(&path)?;
 
     let mut discovered: HashSet<String> = HashSet::new();
@@ -58,12 +57,6 @@ fn do_scan(path: &PathBuf, manifest: &Manifest) -> io::Result<ScanResult> {
     for entry in WalkDir::new(&path).follow_links(false) {
         let entry: DirEntry = entry.map_err(io::Error::other)?;
         let entry_path: &Path = entry.path();
-
-        // if entry_path == sylo_directory || entry_path == path {
-        //     println!("{}", entry_path.display());
-
-        //     continue;
-        // }
 
         let relative_entry_path: &Path = entry_path.strip_prefix(&path).unwrap();
         let relative_entry_path_string: String =
@@ -151,19 +144,11 @@ pub fn scan(path: PathBuf) {
     println!("Updating manifest...");
 
     for new_file in scan_result.new_files {
-        manifest.files.insert(
-            new_file.to_string_lossy().to_string().replace('\\', "/"),
-            vec![],
-        );
+        manifest.files.insert(to_identifier(&new_file), vec![]);
     }
 
     for missing_file in scan_result.missing_files {
-        manifest.files.remove(
-            &missing_file
-                .to_string_lossy()
-                .to_string()
-                .replace('\\', "/"),
-        );
+        manifest.files.remove(&to_identifier(&missing_file));
     }
 
     write_manifest(&manifest_path, manifest);
