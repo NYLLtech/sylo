@@ -3,6 +3,7 @@ mod index;
 mod init;
 mod manifest;
 mod scan;
+mod server;
 mod utils;
 
 use std::path::PathBuf;
@@ -11,6 +12,7 @@ use clap::{Parser, Subcommand};
 
 use crate::init::init;
 use crate::scan::scan;
+use crate::server::server;
 
 const IGNORE_FILE_NAME: &'static str = ".syloignore";
 const DIRECTORY_NAME: &'static str = ".sylo";
@@ -79,7 +81,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             classifiers,
         } => init(path, ignore, patterns, classifiers),
         Commands::Scan => scan(path),
-        Commands::Server => todo!(),
+        Commands::Server => server(path),
     }
 
     Ok(())
